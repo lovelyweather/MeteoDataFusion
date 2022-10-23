@@ -342,7 +342,7 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 ```
 -t 指定密钥类型，默认是rsa ，可以省略;
 -C 设置注释文字，比如邮箱。
-- 首先会弹出“"Enter a file in which to save the key"，不填直接回车就代表当前路径。
+- 首先会弹出“"Enter a file in which to save the key"，不填直接回车就默认生成在~/.ssh文件夹下。
 - 然后会弹出“Enter passphrase”，输入密码，作为额外的一层防护。
 出现如下提示，key就生成好了：
 ```
@@ -366,4 +366,4 @@ The key's randomart image is:
 其中，id_rsa是私匙，id_rsa.pub是公匙，id_rsa不能告诉任何人，只有公钥可以。
 
 ### 4.2 在github上的操作
-在github上传本地的公钥（在个人的setting下的SSH and GPG keys）。
+在github上传本地的公钥（在github的setting下的SSH and GPG keys里粘贴id_rsa.pub里的内容）。
