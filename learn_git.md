@@ -1,4 +1,3 @@
-
 ## 1 什么是版本控制？
 
 版本控制系统是帮助软件团队管理源代码的软件工具。随着开发环境的加速，版本控制系统帮助软件团队更快、更聪明地工作,可以减少开发时间。
@@ -37,7 +36,7 @@
 6. 商定一个工作流
 &emsp;&emsp;如果没有就工作流程达成一致，在合并分支的时候就会导致低效的沟通。
 
-## Git是什么？
+## 2 Git是什么？
 
 Git是一个成熟的的开源项目，由Linux操作系统内核的著名创造者Linus Torvalds于2005年开发。Git用户广泛，它在各种操作系统和IDE（集成开发环境）上都能很好地工作。
 
@@ -155,27 +154,50 @@ git commit -a
 
 这样会将自动将任何修改过的（但不是新的）文件添加到缓存区中，然后提交（所有这些都在这一个命令中完成）。
 
-### 3.3 查看项目历史
+### 3.4 查看项目历史
 
 任何时候都可以通过用以下命令查看修改历史：
 
 ```
-git log
+$ git log
+commit 8b34695d8b1b4a13cf2fd5ef87bff876b937848f (HEAD -> master)
+Author: Haiqin Chen <40618231+lovelyweather@users.noreply.github.com>
+Date:   Sun Oct 23 16:10:08 2022 +0800
+
+    Update learn_git.md
 ```
 
-如果您还想查看每一步的详细差异，可以使用:
+Git的历史表现为一系列commit，上述```git log```命令可以列出这些commit信息。第一行的commit是哈希算法算出的id。
 
+可以```git show```这个id，以查看细节。
+```
+$ git show 8b34695d8b1b4a13cf2fd5ef87bff876b937848f
+```
+其实用前面几位数也就足够了，如```$ git show 8b34695d8b1b```。
+
+可以使用git log -p查看每一处的详细信息:
 ```
 git log -p
 ```
-
-可以使用如下命令查看版本修改的概述:
-
+也可以使用如下命令查看版本修改的概述:
 ```
-git log -stat --summary
+git log --stat --summary
 ```
 
-### 3.4 管理分支
+可以给自己的提交命名：
+```
+$ git tag v2.5 8b34695d8b1b
+```
+用"v2.5"来命名8b34695d8b1b这个版本。如果你打算与其他人分享这个名字（例如，作为一个发布版本），你应该创建一个"tag"对象，也许还需要签名。
+
+一些git log命令：
+```
+$ git log v2.5..v2.6            # commits between v2.5 and v2.6
+$ git log v2.5..                # commits since v2.5
+$ git log --since="2 weeks ago" # commits from the last 2 weeks
+$ git log v2.5.. Makefile       # commits since v2.5 which modify Makefile
+```
+### 3.5 管理分支
 
 Git仓库可以维护多个分支。要创建一个名为"experimental"的新分支：：
 
@@ -222,7 +244,7 @@ git merge experimental
 
 如果你在crazy-idea分支上开发，然后后悔了，你可以随时用```$ git branch -D crazy-idea```命令删除该分支。
 
-### 3.5 使用Git进行协作
+### 3.6 使用Git进行协作
 
 假设Alice启动了一个新项目，其Git仓库位于/home/alice/project；在同一台机器上，Bob也想贡献自己的力量。
 
@@ -298,36 +320,6 @@ bob$ git clone alice.org:/home/alice/project myrepo
 ```
 另外，Git也可以使用http，git pull详情点[这里](https://git-scm.com/docs/git-pull)。
 
-### 3.6 查看历史
-Git的历史表现为一系列commit。我们已经看到，```git log```命令可以列出这些commit信息。第一行的commit是哈希算法算出的id。
-```
-$ git log
-commit c82a22c39cbc32576f64f5c6b3f24b99ea8149c7
-Author: Junio C Hamano <junkio@cox.net>
-Date:   Tue May 16 17:18:22 2006 -0700
-
-    merge-base: Clarify the comments on post processing.
-```
-可以git show这个id，以查看细节。
-```
-$ git show c82a22c39cbc32576f64f5c6b3f24b99ea8149c7
-```
-其实用前面几位数也就足够了，如```$ git show c82a22c39c```。
-
-也可以给自己的提交命名：
-```
-$ git tag v2.5 1b2e1d63ff
-```
-用"v2.5"来命名1b2e1d63ff这个版本。如果你打算与其他人分享这个名字（例如，作为一个发布版本），你应该创建一个"tag"对象，也许还需要签名。
-
-一些git log命令：
-```
-$ git log v2.5..v2.6            # commits between v2.5 and v2.6
-$ git log v2.5..                # commits since v2.5
-$ git log --since="2 weeks ago" # commits from the last 2 weeks
-$ git log v2.5.. Makefile       # commits since v2.5 which modify Makefile
-```
-
 ## 4 SSH Key
 SSH密钥是SSH（secure shell）网络协议的一个访问凭证。这个经过认证和加密的安全网络协议用于在不安全的开放网络上的机器之间进行远程通信。SSH被用于远程文件传输、网络管理和远程访问。所以，不管是在github还是其它服务器上，如果需要进行远程通信，都需要SSH密钥。
 
@@ -364,6 +356,25 @@ The key's randomart image is:
 +----[SHA256]-----+
 ```
 其中，id_rsa是私匙，id_rsa.pub是公匙，id_rsa不能告诉任何人，只有公钥可以。
+## 5 github相关
+github可以理解为一个远程机器，利用git建立本地仓库和远程仓库的通信，所以这部分内容其实不仅限于github，其它远程机器也是一样的。
+首先，在github上传本地机器的公钥（在github的setting下的SSH and GPG keys里粘贴id_rsa.pub里的内容）。
+### 5.1 把本地仓库关联到远程仓库
+1. github上创建一个空的仓库
+2. 使用```git remote add <name> <url>```连接到一个远程仓库，我的示例为：```git remote add xiaowu_md git@github.com:lovelyweather/MeteoDataFusion.git```
+  添加了这个远程仓库后，后续命令中可以使用\<name>作为\<url>的简写。
+3. 使用```git push -u <remote> <branch>```推送到远程
+   - 示例：```git push -u xiaowu_md master```，   将master这个分支推送到xiaowu_md对应的仓库url。远程如果没有这个分支会自动创建。我这里本地一半默认是master。
+   ```-u```表示把本地仓库master的分支也提交上去，否则只提交当前的master与远程合并，其它的分支则不会。第一次加上```-u```即可，因为本地可能有其它分支可以一起传上去；以后提交新代码就不需要了。
+4. 到github仓库上就可以看到刚才提交的代码了，注意需要切换到master分支（因为github上默认的分支是main）。
+   - 可以到仓库的setting下的branches里面将default branch设置为master，这样以后就不用切换了。
+### 5.2 把远程仓库克隆到本地
 
-### 4.2 在github上的操作
-在github上传本地的公钥（在github的setting下的SSH and GPG keys里粘贴id_rsa.pub里的内容）。
+通过```git clone <repo>```，克隆位于<repo>的仓库到本地机器上。原始仓库可以位于本地文件系统上，也可以是在远程机器上。接下来的操作就跟前面一样了，git add, git commit, git push这些。
+
+---
+参考资料：
+1. [git官方教程](https://www.git-scm.com/docs/gittutorial)
+2. [git初学者教程](https://www.atlassian.com/git/tutorials/what-is-version-control)
+3. [git基础命令pdf](./SWTM-2088_Atlassian-Git-Cheatsheet.pdf)
+4. [关于Git这一篇就够了](https://blog.csdn.net/bjbz_cxy/article/details/116703787?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166633139016800182765413%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=166633139016800182765413&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-116703787-null-null.142^v59^pc_rank_34_1,201^v3^control_2&utm_term=git&spm=1018.2226.3001.4187)
