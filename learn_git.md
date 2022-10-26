@@ -382,7 +382,8 @@ github可以理解为一个远程服务器，利用git建立本地仓库和远�
    - 可以到仓库的setting下的branches里面将default branch设置为master，这样以后就不用切换了。
 
 5. 如果想删除掉历史记录再上传：
-```$ git checkout --orphan latest_branch 
+```
+$ git checkout --orphan latest_branch 
 $ git add -A
 $ git commit -am "delete git history to reduce the file size"
 $ git branch -D master # -D is short for -delete -force
