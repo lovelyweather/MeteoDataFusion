@@ -380,6 +380,15 @@ github可以理解为一个远程服务器，利用git建立本地仓库和远�
    ```-u```表示把本地仓库master的分支也提交上去，否则只提交当前的master与远程合并，其它的分支则不会。第一次加上```-u```即可，因为本地可能有其它分支可以一起传上去；以后提交新代码就不需要了。
 4. 到github仓库上就可以看到刚才提交的代码了，注意需要切换到master分支（因为github上默认的分支是main）。
    - 可以到仓库的setting下的branches里面将default branch设置为master，这样以后就不用切换了。
+
+5. 如果想删除掉历史记录再上传：
+```$ git checkout --orphan latest_branch 
+$ git add -A
+$ git commit -am "delete git history to reduce the file size"
+$ git branch -D master # -D is short for -delete -force
+$ git branch -m master # -m means mv, has the function of rename.
+$ git push remote master
+```
 ### 5.2 把远程仓库克隆到本地
 
 通过```git clone <repo>```，克隆位于\<repo>的仓库到本地机器上。原始仓库可以位于本地文件系统上，也可以是在远程机器上。接下来的操作就跟前面一样了，git add, git commit, git push这些。
