@@ -1,3 +1,11 @@
+# 糊里糊不记得改动在哪儿？确定不试试Git吗？
+
+上个月对某个功能的修改，这个月还能记得怎么改的吗？
+想退回到上一次稳定的版本，但是当时的版本忘了保存？
+或者对着v1.0、 v1.1、v1.2的后缀，但是里面什么内容就很迷糊？
+  
+不管是团队协作，还是自己的软件管理，都可以试试Git。
+
 ## 1 什么是版本控制？
 
 版本控制系统是帮助软件团队管理源代码的软件工具。随着开发环境的加速，版本控制系统可以帮助软件团队高效地工作，减少开发时间。
@@ -206,7 +214,7 @@ $ git log v2.5.. Makefile       # commits since v2.5 which modify Makefile
 ```
 ### 3.5 管理分支
 
-Git仓库可以维护多个分支。要创建一个名为"experimental"的新分支：：
+Git仓库可以维护多个分支。要创建一个名为"experimental"的新分支：
 
 ```
 git branch experimental
@@ -387,6 +395,6 @@ github可以理解为一个远程服务器，利用git建立本地仓库和远�
 ---
 参考资料：
 1. [git官方教程](https://www.git-scm.com/docs/gittutorial)
-2. [git初学者教程](https://www.atlassian.com/git/tutorials/what-is-version-control)
-3. [git基础命令pdf](./SWTM-2088_Atlassian-Git-Cheatsheet.pdf)
+2. [git初学者教程](https://www.atlassian.com/git/tutorials/what-is-version-control)（推荐）
+3. [git基础命令pdf](https://github.com/lovelyweather/MeteoDataFusion/blob/master/SWTM-2088_Atlassian-Git-Cheatsheet.pdf)
 4. [关于Git这一篇就够了](https://blog.csdn.net/bjbz_cxy/article/details/116703787?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166633139016800182765413%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=166633139016800182765413&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-116703787-null-null.142^v59^pc_rank_34_1,201^v3^control_2&utm_term=git&spm=1018.2226.3001.4187)

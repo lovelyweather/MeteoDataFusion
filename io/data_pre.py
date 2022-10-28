@@ -1,4 +1,4 @@
-from . import CMOSAIC, FY4ALevel3
+from . import CMOSAIC, FY4ALevel3, WSR98D
 
 import numpy as np
 
@@ -18,20 +18,6 @@ def read(filename:str, datatype:str):
     elif datatype == "FY4A":
         return FY4ALevel3.FY4ALevel32ll(FY4ALevel3.FY4ALevel3Data(filename), Lat_des_2D, Lon_des_2D, 'nearest').interp()
     elif datatype == "WSR98D":
-        return WSR98DFile.WSR98D2NRadar(WSR98DFile.WSR98DBaseData(filename, station_lon, station_lat, station_alt)).ToPRD()
+        return WSR98D.Radar2ll(WSR98D.WSR98DData(filename, sounding_infile = 'None')).interp()
     else:
         raise TypeError("unsupported radar type!")
-
-
-'''
-
-	1. 各数据接口，写成统一的格式，暂定等经纬度，网格比实际 
-    机载网格大一些（因为外推可能也需要周围的数据），之后再截取；data(time, lat, lon);
-	2. 外推，包括光流法和深度学习外推方法，进行时间对齐；
-	3. 插值到统一的机载雷达网格，实现空间匹配；
-	4. 可视化。
-
-	1. 数据接口
-
-'''
-
