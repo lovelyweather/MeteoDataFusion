@@ -386,6 +386,9 @@ github可以理解为一个远程服务器，利用git建立本地仓库和远�
 3. 使用```git push -u <remote> <branch>```推送到远程
    - 示例：```git push -u xiaowu_md master```，   将master这个分支推送到xiaowu_md对应的仓库url。远程如果没有这个分支会自动创建。我这里本地一半默认是master。
    ```-u```表示把本地仓库master的分支也提交上去，否则只提交当前的master与远程合并，其它的分支则不会。第一次加上```-u```即可，因为本地可能有其它分支可以一起传上去；以后提交新代码就不需要了。
+
+   强行推送当前分支到远程仓库，即使有冲突: ```$ git push [remote] --force```
+   
 4. 到github仓库上就可以看到刚才提交的代码了，注意需要切换到master分支（因为github上默认的分支是main）。
    - 可以到仓库的setting下的branches里面将default branch设置为master，这样以后就不用切换了。
 
@@ -405,12 +408,6 @@ $ git push remote master
 ---
 参考资料：
 1. [git官方教程](https://www.git-scm.com/docs/gittutorial)
-<<<<<<< HEAD
 2. [git初学者教程](https://www.atlassian.com/git/tutorials/what-is-version-control)（推荐）
 3. [git基础命令pdf](https://github.com/lovelyweather/MeteoDataFusion/blob/master/SWTM-2088_Atlassian-Git-Cheatsheet.pdf)
 4. [关于Git这一篇就够了](https://blog.csdn.net/bjbz_cxy/article/details/116703787?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166633139016800182765413%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=166633139016800182765413&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-116703787-null-null.142^v59^pc_rank_34_1,201^v3^control_2&utm_term=git&spm=1018.2226.3001.4187)
-=======
-2. [git初学者教程](https://www.atlassian.com/git/tutorials/what-is-version-control)
-3. [git基础命令pdf](./SWTM-2088_Atlassian-Git-Cheatsheet.pdf)
-4. [关于Git这一篇就够了](https://blog.csdn.net/bjbz_cxy/article/details/116703787?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166633139016800182765413%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=166633139016800182765413&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-116703787-null-null.142^v59^pc_rank_34_1,201^v3^control_2&utm_term=git&spm=1018.2226.3001.4187)
->>>>>>> 78f4357a949c3e7501a25071dc9e1c7347d18de7

@@ -159,20 +159,20 @@ class CRefMosaic2ll(object):
 if __name__=='__main__':
     
     Min_Lat= 15
-    Max_Lat = 30
-    Min_Lon = 100
+    Max_Lat = 55
+    Min_Lon = 70
     Max_Lon = 130 #中国区域的经度范围70-140E，纬度范围15-55N
 
-    Lat_des_1D = np.arange( Max_Lat, Min_Lat, -0.04 )  # 生成插值后的纬度
-    Lon_des_1D = np.arange( Min_Lon, Max_Lon,  0.04 )  # 生成插值后的经度
+    Lat_des_1D = np.arange( Max_Lat, Min_Lat, -0.1 )  # 生成插值后的纬度  -0.04
+    Lon_des_1D = np.arange( Min_Lon, Max_Lon,  0.1 )  # 生成插值后的经度
+
 
     Lon_des_2D, Lat_des_2D = np.meshgrid(Lon_des_1D, Lat_des_1D) #打网格 (x,y)
 
-    infile = 'Z_RADA_C_BABJ_20220915030000_P_DOR_RDCP_R_ACHN.PNG'
+    path = '/Users/xiaowu/Library/Mobile Documents/com~apple~CloudDocs/work/MeteoDataFusion'
+    infile = os.path.join(path,'test','data','Z_RADA_C_BABJ_20220425061200_P_DOR_RDCP_R_ACHN.PNG')
 
     data_des = CRefMosaic2ll(CRefMosaicData(infile), Lat_des_2D, Lon_des_2D, 'linear').interp()
     
     plt.imshow(data_des)
     plt.savefig('test_cref.png')
-    
-

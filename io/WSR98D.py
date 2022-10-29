@@ -12,8 +12,10 @@ import pytda
 from csu_radartools import csu_fhc
 from pyart import retrieve
 from pyart.core import cartesian_to_geographic
+
 from pyart.core.transforms import antenna_to_cartesian
 from pycwr.io import read_auto
+from scipy.interpolate import griddata
 
 # go to pckgs, `$ git clone git@github.com:CSU-Radarmet/CSU_RadarTools.git`, then run `python setup.py install`;
 # `$ pip show pip show csu-radartools`, you will see whether it success.
@@ -38,17 +40,17 @@ class WSR98DData(object):
         if 'fh' in fields_add:
             self.PyartRadar =  self.cal_fh()   
         if 'tb' in fields_add:
-            self.cal_tb()
+            self.cal_tb()   # add turbulence to PyartRadar
 
     def retrieve(self):
         
         # Configure a gatefilter to filter out copolar correlation coefficient values > 0.9
         gatefilter = pyart.filters.GateFilter(self.PyartRadar)
         gatefilter.exclude_transition()
-        gatefilter.exclude_below('cross_correlation_ratio', 0.9)
+        gatefilter.exclude_below('cross_correlation_ratio', 0.8)
 
         # the compoz has a reordered ray sequence
-        compoz = retrieve.composite_reflectivity(self.PyartRadar, field='reflectivity',  gatefilter=gatefilter) 
+        compoz = retrieve.composite_reflectivity(self.PyartRadar, field='reflectivity',  gatefilter=None) 
 
         return compoz
 
@@ -190,29 +192,65 @@ class WSR98DData(object):
 class Radar2ll(object):
     '''interpolation'''
 
-    def __init__(self, CRefMosaic, lat_des, lon_des, interpolation_method:str):
-        self.CRefMosaic = CRefMosaic
-        self.lat_des = lat_des
+    def __init__(self, WSR98DData, lat_des, lon_des, var:list, sweep:int, interpolation_method:str):
+        self.PyartRadar = WSR98DData.PyartRadar
+        self.compz      = WSR98DData.compz
+        self.lat_des = lat_des 
         self.lon_des = lon_des
         self.interp_md = interpolation_method
-    
+        self.var       = var
+        self.sweep     = sweep
+        self.radar_ll    = {}
+
+    def interp(self):
+
+        lat, lon, alt = self.PyartRadar.get_gate_lat_lon_alt(self.sweep)
+        
+        # lat & lon before, size is (nlat*nlon,2)
+        LatLon_Before = np.hstack(
+            (lat.reshape(-1, 1), lon.reshape(-1, 1)) ) # 按水平方向进行叠加，形成两列
+
+        for ivar in self.var:
+            if ivar in ['compz']: # 2d variables
+                data  = self.compz.fields['composite_reflectivity']['data'] # slice is a basic function for slice
+                units = self.compz.fields['composite_reflectivity']['units'] 
+                lat   = self.compz.latitude
+                lon   = self.compz.longitude
+                
+            else:                 # 3d variables
+                data = self.PyartRadar.fields[ivar]['data'][self.PyartRadar.get_slice(self.sweep)] #slice()函数是一个切片函数 
+                units =  self.PyartRadar.fields[ivar]['units'] 
+
+            data_des = griddata(LatLon_Before, data.reshape(-1, 1), (self.lat_des, self.lon_des),  method=self.interp_md).squeeze()
+            field_dict = {
+                'data': data_des, \
+                'units': units \
+                }
+            self.radar_ll[ivar] = field_dict
+
+        return(self.radar_ll)
 
 if __name__ == '__main__':
 
+    Min_Lat= 15
+    Max_Lat = 55
+    Min_Lon = 70
+    Max_Lon = 130 #中国区域的经度范围70-140E，纬度范围15-55N
+
+    Lat_des_1D = np.arange( Max_Lat, Min_Lat, -0.1 )  # 生成插值后的纬度  -0.04
+    Lon_des_1D = np.arange( Min_Lon, Max_Lon,  0.1 )  # 生成插值后的经度
+
+    Lon_des_2D, Lat_des_2D = np.meshgrid(Lon_des_1D, Lat_des_1D) #打网格 (x,y)
+
     path = '/Users/xiaowu/Library/Mobile Documents/com~apple~CloudDocs/work/MeteoDataFusion'
     infile = os.path.join(path,'test','data','Z9002.20220425.060745.AR2.bz2')
-    radar = WSR98DData(infile).PyartRadar
 
-    compz = WSR98DData(infile).compz
+    radar_ll = Radar2ll(WSR98DData(infile), Lat_des_2D, Lon_des_2D, ['FH', 'compz'], 0, 'linear').interp()
+    
+    plt.imshow(radar_ll['compz']['data'])
+    plt.savefig('test_98d.png')
 
-    #fig = plt.figure(figsize=(8,6))
-    #ax  = plt.subplot(111)
-    #composite_display = pyart.graph.RadarDisplay(radar)
-    #composite_display.plot("composite_reflectivity", ax=ax,
-    #                   vmin=-20, vmax=80, cmap='pyart_HomeyerRainbow')
-
-    #plt.savefig('cf.png')
-
+'''
     def two_panel_plot( radar, sweep=0, var1='reflectivity', vmin1=0, vmax1=65, cmap1='RdYlBu_r', 
                    units1='dBZ', var2='differential_reflectivity', vmin2=-5, vmax2=5, 
                    cmap2='RdYlBu_r', units2='dB', return_flag=False, xlim=[-150,150],
@@ -252,3 +290,4 @@ if __name__ == '__main__':
     display.cbs[1] = adjust_fhc_colorbar_for_pyart(display.cbs[1])
 
     plt.savefig('cf.png')
+'''
