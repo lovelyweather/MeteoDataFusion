@@ -81,129 +81,155 @@ git安装参见这个[教程](https://www.atlassian.com/git/tutorials/install-gi
 1. 使用apt-get安装git
 
 ```
-sudo apt-get install git
+$ sudo apt-get install git
 ```
 
 2. 查询是否安装成功
 
 ```
-git --version
+$ git --version
 ```
 
 输出：```git version 2.30.1```
 3. 配置Git用户名和邮箱。
 
 ```
-git config --global user.name "你的用户名"
-git config --global user.email "你的邮箱"
+$ git config --global user.name "你的用户名"
+$ git config --global user.email "你的邮箱"
 ```
 
 ### 3.2 导入一个新的项目
 
-1. 进入到一个项目目录下，使用git init进行初始化。
+1. 进入工作目录project下（假设里面有3个文件，file1、file2、file3），使用git init进行初始化。
 
 ```
-cd project
-git init
+$ cd project
+$ git init
 ```
 
 git会回复：```Initialized empty Git repository in .git/```
 
-现在你已经初始化了工作目录--一个新的目录被创建，名为".git"，可以通过```ls -ah```查看。
+![pic1](./pics/pic1.png)
 
-2. 用git add告诉Git对当前目录下所有文件的内容进行快照，"."表示所有内容。
+现在你已经初始化了工作目录——在project路径下会生成一个新的目录，名为".git"，可以通过```ls -ah```查看。
 
+2. 使用git add告诉Git对当前目录下所有文件的内容进行快照，"."表示所有内容。
 ```
-git add .
+$ git add .
 ```
 
 这个快照现在被保存在了一个**临时的暂存区域**，Git称之为 "索引（**index**）"。
 
-3. 用git commit将索引的内容永久保存在仓库里。
+3. 使用git commit命令将索引的内容永久保存在仓库里:
 
 ```
-git commit
+$ git commit -m "the 1st commit"
 ```
+"-m"后面输入描述的信息（简单描述一下做了什么即可），会生成40位的哈希值，用作id，并把刚刚用git add添加到提交缓存区里的文件提交到本地仓库中，便于回溯。如果觉得message写得不好，还可以通过```git commit --amend```进行修改。
 
-### 3.3 做一些修改
+### 3.3 修改项目内容
 
-对某些文件（file1 file2 file3）进行修改，然后把更新的内容添加到暂存区（index）中：
-
-```
-git add file1 file2 file3
-```
-
-提交前，可以用带有--cached选项的git diff命令来查看即将提交的内容。
+对某些文件（file1 file2 file3）进行一些修改（我这里在file1和file2文件末尾加了一行“add a new line”），然后把更新的内容添加到暂存区（index）中：
 
 ```
-git diff --cached
+$ git add file1 file2 file3
 ```
 
-如果没有"--cached"，git diff会显示您已经做的但尚未添加到index中的任何修改。也可以用git status得到一个简短的情况说明:
+提交改动前，可以用带有--cached选项的git diff命令来查看即将提交的内容。
+
+```
+$ git diff --cached
+```
+![pic2](./pics/pic2.png)
+如果不带"--cached"，git diff会显示您已经做的但尚未添加到index中的任何修改。也可以用git status得到一个简短的情况说明:
 
 ```
 $ git status
 On branch master
 Changes to be committed:
-Your branch is up to date with 'origin/master'.
   (use "git restore --staged <file>..." to unstage)
-
- modified:   file1
- modified:   file2
- modified:   file3
+	modified:   file1
+	modified:   file2
 ```
 
-如果还要做其它改动，也可以继续修改，把改动的文件也存到缓存区然后提交：
+如果还要做其它改动，也可以继续修改，再把改动的文件也存到缓存区。最后将修改内容提交：
 
 ```
 git commit -m "your message"
 ```
 
-它将提示您输入描述该变更的信息（简单描述一下做了什么即可），然后会生成40位的哈希值，用作id，并把刚刚用git add添加到提交缓存区里的文件提交到本地仓库中，便于回溯。如果觉得message写得不好，还可以通过```git commit --amend```进行修改。
-
-另外，你也可以不先运行git add再提交，而是使用
-
+当然，你也可以选择跳过git add，直接使用：
 ```
 git commit -a
 ```
+这样Git会将自动将任何修改过的（但不是新的）文件添加到缓存区中，然后提交（所有这些都在这一个命令中完成）。
 
-这样会将自动将任何修改过的（但不是新的）文件添加到缓存区中，然后提交（所有这些都在这一个命令中完成）。
+![pic3](./pics/pic3.jpg)
 
 ### 3.4 查看项目历史
 
-任何时候都可以通过用以下命令查看修改历史：
+任何时候都可以通过用```git log```命令查看修改历史：
 
 ```
 $ git log
-commit 8b34695d8b1b4a13cf2fd5ef87bff876b937848f (HEAD -> master)
-Author: Haiqin Chen <40618231+lovelyweather@users.noreply.github.com>
-Date:   Sun Oct 23 16:10:08 2022 +0800
+commit 952e050d211c99fd60bc8c1d1dfefbed7adfbed4 (HEAD -> master)
+Author: xiaowu <pfchenhaiqin@163.com>
+Date:   Sun Oct 30 20:46:49 2022 +0800
 
-    Update learn_git.md
+    file1 file2 modified
+
+commit 4f16765925320325ff0165d08ca88ea9f3d45494
+Author: xiaowu <pfchenhaiqin@163.com>
+Date:   Sun Oct 30 20:30:15 2022 +0800
+
+    the 1st commit
 ```
 
 Git的历史表现为一系列commit，上述```git log```命令可以列出这些commit信息。第一行的commit是哈希算法算出的id。
 
 可以```git show```这个id，以查看细节。
 ```
-$ git show 8b34695d8b1b4a13cf2fd5ef87bff876b937848f
+$ git show 952e050d211c99fd60bc8c1d1dfefbed7adfbed4
 ```
-其实用前面几位数也就足够了，如```$ git show 8b34695d8b1b```。
+其实用前面几位数也就足够了，如```$ git show 952e050```。
 
 可以使用git log -p查看每一处的详细信息:
 ```
-git log -p
+$ git log -p
 ```
-也可以使用如下命令查看版本修改的概述:
+也可以使用如下命令查看版本修改的概述（简短一些）:
 ```
-git log --stat --summary
+$ git log --stat --summary
+commit 952e050d211c99fd60bc8c1d1dfefbed7adfbed4 (HEAD -> master)
+Author: xiaowu <pfchenhaiqin@163.com>
+Date:   Sun Oct 30 20:46:49 2022 +0800
+
+    file1 file2 modified
+
+ file1 | 1 +
+ file2 | 1 +
+ 2 files changed, 2 insertions(+)
+
+commit 4f16765925320325ff0165d08ca88ea9f3d45494
+Author: xiaowu <pfchenhaiqin@163.com>
+Date:   Sun Oct 30 20:30:15 2022 +0800
+
+    the 1st commit
+
+ file1 | 1 +
+ file2 | 1 +
+ file3 | 1 +
+ 3 files changed, 3 insertions(+)
+ create mode 100644 file1
+ create mode 100644 file2
+ create mode 100644 file3
 ```
 
 可以给自己的提交命名：
 ```
-$ git tag v2.5 8b34695d8b1b
+$ git tag v1.0 952e050
 ```
-用"v2.5"来命名8b34695d8b1b这个版本。如果你打算与其他人分享这个名字（例如，作为一个发布版本），你应该创建一个"tag"对象，也许还需要签名。
+用"v1.0"来命名8b34695d8b1b这个版本。如果你打算与其他人分享这个名字（例如，作为一个发布版本），你应该创建一个"tag"对象。
 
 一些git log命令：
 ```
@@ -214,10 +240,10 @@ $ git log v2.5.. Makefile       # commits since v2.5 which modify Makefile
 ```
 ### 3.5 管理分支
 
-Git仓库可以维护多个分支。要创建一个名为"experimental"的新分支：
+Git仓库可以维护多个分支。创建一个名为"experimental"的新分支：
 
 ```
-git branch experimental
+$ git branch experimental
 ```
 
 如果现在运行```$ git branch```，会得到一个所有现有分支的列表：
@@ -227,7 +253,7 @@ git branch experimental
 * master
 ```
 
-"experimental"分支是刚刚创建的，"master"分支是自动创建的默认分支。星号标志着你当前所在的分支；
+"experimental"是刚刚创建的分支，"master"是自动创建的默认分支。星号标志着你当前所在的分支；
 输入```$ git switch experimental```可以切换到experimental分支。
 现在编辑一个文件，提交修改，然后切换回主分支:
 
@@ -239,14 +265,15 @@ $ git switch master
 
 这时不能检查experimental上所做的修改了，因为已经回到了主分支。
 
-可以在主干分支上做一个不同的修改，然后commit：
+可以在主分支上做一个不同的修改，然后commit：
 
 ```
 (edit file)
 $ git commit -a
 ```
-
-现在两个分支有差别了。要将experimental分支的修改合并到main分支，请运行：
+如下图，现在两个分支有差别了。
+![pic4](./pics/pic4.jpg)
+要将experimental分支的修改合并到主分支中，请运行：
 ```
 $ git merge experimental
 ```
@@ -280,7 +307,7 @@ alice$ git pull /home/bob/myrepo master
 
 这里，"pull"命令执行了两项操作：它从远程分支获取修改，然后将它们合并到当前分支中。
 
-注意：一般来说，Alice会在启动这个"拉取"命令之前，先提交她的本地修改。如果Bob的工作与Alice在他们的历史分叉后所做的工作有冲突，Aliceq将使用她的工作树和缓存区来解决冲突。
+注意：一般来说，Alice会在启动这个"拉取"命令之前，先提交她的本地修改。
 
 Alice可以先使用"fetch"命令大致查看一下Bob所做的事情，使用"FETCH_HEAD"，以确定他是否有值得拉取的东西，而不用先合并。像这样:
 ```
@@ -289,13 +316,13 @@ alice$ git log -p HEAD..FETCH_HEAD
 ```
 即使Alice有未提交的本地修改，这个操作也是安全的。范围符号"HEAD...FETCH_HEAD"的意思是：显示从HEAD到FETCH_HEAD的一切修改内容。因为Alice已经知道了直到她当前状态（HEAD）的所有内容，只需要审查Bob在他的状态（FETCH_HEAD）中有哪些是她没有看到的。
 
-在检查了Bob的修改后，如果没有什么紧急的事情，Alice可以决定继续工作而不从Bob那里拉取。如果Bob的历史中确实有一些Alice马上需要的东西，Alice可以选择先把她的工作藏起来，执行一个"pull"，再把她的工作置于新的版本之上。
+在检查了Bob的修改后，如果没有什么紧急的事情，Alice可以决定继续工作而不从Bob那里拉取。如果Bob的历史中确实有一些Alice马上需要的东西，Alice可以选择先把她的工作暂存起来（使用```git stash``` 命令），执行一个"pull"将Bob的工作合并进来，然后再使用```$ git stash pop```命令把暂存区的改动恢复到工作区。
 
 当你在一个紧密的团体中工作时，反复与同一个版本库交互是很正常的。通过定义远程版本库的缩写，你可以让它变得更容易：
 ```
 alice$ git remote add bob /home/bob/myrepo
 ```
-这样，Alice就可以使用git fetch命令单独执行"pull"的第一部分操作，而不需要将它们与自己的分支合并，使用：
+这样，Alice可以使用```git fetch```命令单独执行"pull"的第一部分操作，而不需要将它与自己的分支合并，使用：
 ```
 alice$ git fetch bob
 ```
@@ -305,7 +332,7 @@ alice$ git log -p master...bob/master
 ```
 可以显示Bob从Alice的master分支分出后所做的修改。
 
-检查完这些改动后，Alice可以将这些改动合并到她的主干分支中:
+检查完这些改动后，Alice可以将这些改动合并到她的主干分支master中:
 ```
 alice$ git merge bob/master
 ```
@@ -319,7 +346,7 @@ alice$ git pull . remotes/bob/master
 ```
 bob$ git pull
 ```
-他不需要给出Alice仓库的路径；当Bob克隆Alice的仓库时，Git在仓库配置中存储了她的仓库位置，这个位置会被用于拉取：
+他不需要给出Alice仓库的路径；当Bob克隆Alice的仓库时，Git在仓库配置中默认存储了她的仓库位置，每次pull会默认从这个位置拉取。
 ```
 bob$ git config --get remote.origin.url
 /home/alice/project
@@ -336,6 +363,9 @@ bob$ git clone alice.org:/home/alice/project myrepo
 另外，Git也可以使用http，git pull详情点[这里](https://git-scm.com/docs/git-pull)。
 
 ## 4 SSH Key
+
+以上是在同一个机器中进行协作，如果在多个机器之间进行通信，则可以使用SSH密钥。
+
 SSH密钥是SSH（secure shell）网络协议的一个访问凭证。这个经过认证和加密的安全网络协议用于在不安全的开放网络上的机器之间进行远程通信。SSH被用于远程文件传输、网络管理和远程访问。所以，不管是在github还是其它服务器上，如果需要进行远程通信，都需要SSH密钥。
 
 SSH使用一对密钥来启动远程各方之间的安全握手。该密钥对包含一个公钥和一个私钥。私钥与公钥都被称为key，公钥可以看作一把“锁”，私钥看作是“钥匙”。把公开的“锁”交给远程各方，以加密或“锁定”数据。持有的“私人密钥”可以打开这些数据。
@@ -348,7 +378,6 @@ SSH命令行工具包含一个密钥生成（keygen）工具：
 ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 ```
 -t 指定密钥类型，默认是rsa ，可以省略;
-
 -C 设置注释文字，比如邮箱。
 - 首先会弹出“"Enter a file in which to save the key"，不填直接回车就默认生成在~/.ssh文件夹下。
 - 然后会弹出“Enter passphrase”，输入密码，作为额外的一层防护。
@@ -384,23 +413,25 @@ github可以理解为一个远程服务器，利用git建立本地仓库和远�
     - 我的示例为：```git remote add xiaowu_md git@github.com:lovelyweather/MeteoDataFusion.git```
   添加了这个远程仓库后，后续命令中可以使用\<name>作为\<url>的简写。
 3. 使用```git push -u <remote> <branch>```推送到远程
-   - 示例：```git push -u xiaowu_md master```，   将master这个分支推送到xiaowu_md对应的仓库url。远程如果没有这个分支会自动创建。我这里本地一半默认是master。
+   - 示例：```git push -u xiaowu_md master```，   将master这个分支推送到xiaowu_md对应的仓库url。远程如果没有这个分支会自动创建。我这里本地一般默认是master。
    ```-u```表示把本地仓库master的分支也提交上去，否则只提交当前的master与远程合并，其它的分支则不会。第一次加上```-u```即可，因为本地可能有其它分支可以一起传上去；以后提交新代码就不需要了。
 
-   强行推送当前分支到远程仓库，即使有冲突: ```$ git push [remote] --force```
+   - 强行推送当前分支到远程仓库，即使有冲突: ```$ git push [remote] --force```
    
 4. 到github仓库上就可以看到刚才提交的代码了，注意需要切换到master分支（因为github上默认的分支是main）。
    - 可以到仓库的setting下的branches里面将default branch设置为master，这样以后就不用切换了。
 
-5. 如果想删除掉历史记录再上传：
+5. **如果想删除掉历史记录再上传**：
 ```
-$ git checkout --orphan latest_branch 
+$ git checkout --orphan latest_branch # git checkout 切换分支
 $ git add -A
 $ git commit -am "delete git history to reduce the file size"
 $ git branch -D master # -D is short for -delete -force
 $ git branch -m master # -m means mv, has the function of rename.
 $ git push remote master
 ```
+解释：```git checkout --orphan latest_branch```会基于当前所在分支新建一个赤裸裸的分支latest_branch，没有任何的提交历史，但是当前分支的内容一一俱全。新建的分支，严格意义上说，还不是一个分支，因为HEAD指向的引用中没有commit值，只有在进行一次提交后，它才算得上真正的分支。第4行删掉原来的master分支，第5行将当前latest_branch重命名为master，最后一行推送到远程。
+
 ### 5.2 把远程仓库克隆到本地
 
 通过```git clone <repo>```，克隆位于\<repo>的仓库到本地机器上。原始仓库可以位于本地文件系统上，也可以是在远程机器上。接下来的操作就跟前面一样了，git add, git commit, git push这些。
