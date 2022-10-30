@@ -1,8 +1,8 @@
 import os
 import warnings
-
 warnings.filterwarnings('ignore') # setting ignore as a parameter
 
+from datetime import datetime
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,7 +12,6 @@ import pytda
 from csu_radartools import csu_fhc
 from pyart import retrieve
 from pyart.core import cartesian_to_geographic
-
 from pyart.core.transforms import antenna_to_cartesian
 from pycwr.io import read_auto
 from scipy.interpolate import griddata
@@ -32,8 +31,6 @@ class WSR98DData(object):
         self.sounding   = sounding_infile 
 
         PRD = read_auto(self.infile)
-
-        #convert to Pyart format
         self.PyartRadar = PRD.ToPyartRadar()
         if 'compz' in fields_add:
             self.compz      = self.retrieve()     
@@ -41,6 +38,9 @@ class WSR98DData(object):
             self.PyartRadar =  self.cal_fh()   
         if 'tb' in fields_add:
             self.cal_tb()   # add turbulence to PyartRadar
+
+        ddtime = PRD.scan_info.end_time.values.astype(str)
+        self.time = datetime.strptime(ddtime[:19],"%Y-%m-%dT%H:%M:%S")
 
     def retrieve(self):
         

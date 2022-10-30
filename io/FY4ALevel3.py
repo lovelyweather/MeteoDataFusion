@@ -1,10 +1,11 @@
+import os
+
 import numpy as np
 from netCDF4 import Dataset  # 读取nc文件用到的包
 from scipy.interpolate import griddata  # 对SST空间插值用到的函数
 import matplotlib.pyplot as plt
 import xarray as xr
-import os
-
+from datetime import datetime
 
 class FY4ALevel3Data(object):
     # can add the function to determine the resolution by file name later
@@ -18,19 +19,21 @@ class FY4ALevel3Data(object):
 
     def __init__(self,filename):
         self.infile = filename
-        self.lat, self.lon, self.data = self.data_prepare()
+        self.time, self.lat, self.lon, self.data = self.data_prepare()
 
     def data_prepare(self):
         dataset = Dataset(self.infile)
         self.ds_name = dataset.dataset_name
         self.long_name = dataset.Title
 
+        time = datetime.strptime(dataset.time_coverage_end[:-5], "%Y-%m-%dT%H:%M:%S")
         ll_extent = dataset.variables['geospatial_lat_lon_extent']
         lat_real = FY4ALevel3Data.lat[ ll_extent.begin_line_number:ll_extent.end_line_number+1 , ll_extent.begin_pixel_number:ll_extent.end_pixel_number+1 ]
         lon_real = FY4ALevel3Data.lon[ ll_extent.begin_line_number:ll_extent.end_line_number+1 , ll_extent.begin_pixel_number:ll_extent.end_pixel_number+1 ] 
         
         data = dataset.variables[self.ds_name][:].data 
-        return lat_real, lon_real, data
+
+        return time, lat_real, lon_real, data
 
 class FY4ALevel32ll(object):
     '''interpolation
