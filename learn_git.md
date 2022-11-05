@@ -141,6 +141,7 @@ $ git add file1 file2 file3
 $ git diff --cached
 ```
 ![pic2](./pics/pic2.png)
+
 如果不带"--cached"，git diff会显示您已经做的但尚未添加到index中的任何修改。也可以用git status得到一个简短的情况说明:
 
 ```
@@ -273,6 +274,7 @@ $ git commit -a
 ```
 如下图，现在两个分支有差别了。
 ![pic4](./pics/pic4.jpg)
+
 要将experimental分支的修改合并到主分支中，请运行：
 ```
 $ git merge experimental

@@ -11,9 +11,20 @@ following is the workflow:
 
   **10/29**
     1. continue the wsr98d module, process into dataframe with time dimension. (2-3h)
-    2. update learn_Git.md, hope to finish.(2-3h)
-       1. MOS reading, organizing GBM. 
+    2. update learn_Git.md, hope to finish. Actually encountered conflict, not sure how to resolve.
+
+  **10/30**
+    1. finish io module, not it can process all supported data into a unified grid, with dimensions of time, lat, lon.
+    2. resolve conflicts with different branches, use git push remote --force. Finally finished learn_git.md.
 
 - [ ] extrapolation at a specific time, eg., optical flow method, machine learning method;
+  **10/31**
+    1. fetch the optical flow codes used before;
+    2. preparation for machine learning by learning UNet with SEVIR data.
+
 - [ ] interpolation into a customized grid;
+   **11/2**
+    1. interpolate into a aircraft-based grid.
 - [ ] visualization.
+     
+

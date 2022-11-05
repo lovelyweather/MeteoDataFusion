@@ -200,7 +200,7 @@ class Radar2ll(object):
         self.interp_md = interpolation_method
         self.var       = var
         self.sweep     = sweep
-        self.radar_ll    = {}
+        self.radar_ll  = {}
 
     def interp(self):
 

@@ -145,16 +145,24 @@ class CRefMosaic2ll(object):
         self.lat_des = lat_des
         self.lon_des = lon_des
         self.interp_md = interpolation_method
+        self.cmosiac_ll = {}
 
     def interp(self):
         # 插值前的经纬度, 维度是(nlat*nlon,2)
         LatLon_Before = np.hstack(
             (self.CRefMosaic.lat.reshape(-1, 1), self.CRefMosaic.lon.reshape(-1, 1)) ) # 按水平方向进行叠加，形成两列
         
+        units = 'dBZ'
         data_des = griddata(LatLon_Before, self.CRefMosaic.data.reshape(-1, 1), (self.lat_des, self.lon_des),  method=self.interp_md).squeeze()
 
-        return(data_des)
+        field_dict = {
+            'data': data_des, \
+            'units': units \
+            }
 
+        self.cmosiac_ll['cref'] = field_dict
+
+        return(self.cmosiac_ll)
 
 if __name__=='__main__':
     
@@ -172,7 +180,7 @@ if __name__=='__main__':
     path = '/Users/xiaowu/Library/Mobile Documents/com~apple~CloudDocs/work/MeteoDataFusion'
     infile = os.path.join(path,'test','data','Z_RADA_C_BABJ_20220425061200_P_DOR_RDCP_R_ACHN.PNG')
 
-    data_des = CRefMosaic2ll(CRefMosaicData(infile), Lat_des_2D, Lon_des_2D, 'linear').interp()
+    cmosiac_ll = CRefMosaic2ll(CRefMosaicData(infile), Lat_des_2D, Lon_des_2D, 'linear').interp()
     
-    plt.imshow(data_des)
+    plt.imshow(cmosiac_ll['cref']['data'])
     plt.savefig('test_cref.png')

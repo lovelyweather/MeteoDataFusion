@@ -19,7 +19,7 @@ class FY4ALevel3Data(object):
 
     def __init__(self,filename):
         self.infile = filename
-        self.time, self.lat, self.lon, self.data = self.data_prepare()
+        self.time, self.lat, self.lon, self.data, self.units = self.data_prepare()
 
     def data_prepare(self):
         dataset = Dataset(self.infile)
@@ -32,12 +32,13 @@ class FY4ALevel3Data(object):
         lon_real = FY4ALevel3Data.lon[ ll_extent.begin_line_number:ll_extent.end_line_number+1 , ll_extent.begin_pixel_number:ll_extent.end_pixel_number+1 ] 
         
         data = dataset.variables[self.ds_name][:].data 
+        units = dataset.variables[self.ds_name].units 
 
-        return time, lat_real, lon_real, data
+        return time, lat_real, lon_real, data, units
 
 class FY4ALevel32ll(object):
     '''interpolation
-    same as CRefMosaic, combine into 1 ?
+
     '''
 
     def __init__(self, FY4ALevel3, lat_des, lon_des, interpolation_method):
@@ -45,15 +46,24 @@ class FY4ALevel32ll(object):
         self.lat_des = lat_des
         self.lon_des = lon_des
         self.interp_md = interpolation_method
+        self.fy4_ll    = {}
 
     def interp(self):
         # 插值前的经纬度, 维度是(nlat*nlon,2)
         LatLon_Before = np.hstack(
             (self.FY4ALevel3.lat.reshape(-1, 1), self.FY4ALevel3.lon.reshape(-1, 1)) ) # 按水平方向进行叠加，形成两列
         
+        units    =  self.FY4ALevel3.units
         data_des = griddata(LatLon_Before, self.FY4ALevel3.data.reshape(-1, 1), (self.lat_des, self.lon_des),  method=self.interp_md).squeeze()
 
-        return(data_des)
+        field_dict = {
+            'data': data_des, \
+            'units': units \
+            }
+
+        self.fy4_ll[self.FY4ALevel3.ds_name] = field_dict
+
+        return(self.fy4_ll)
 
 if __name__=='__main__':
     
@@ -72,7 +82,7 @@ if __name__=='__main__':
     filename = r'FY4A-_AGRI--_N_REGC_1047E_L2-_CTH-_MULT_NOM_20220425063000_20220425063417_4000M_V0001.NC'
     infile = os.path.join(path, filename)
 
-    data_des = FY4ALevel32ll(FY4ALevel3Data(infile), Lat_des_2D, Lon_des_2D, 'nearest').interp()
+    fy4_ll = FY4ALevel32ll(FY4ALevel3Data(infile), Lat_des_2D, Lon_des_2D, 'nearest').interp()
 
-    plt.imshow(data_des)
+    plt.imshow(fy4_ll['CTH']['data'])
     plt.savefig('test_fy4.png')
