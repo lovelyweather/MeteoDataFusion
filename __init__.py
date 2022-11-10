@@ -8,3 +8,4 @@ Py-MetFusion: The weather data fusion Toolkit designed
 from . import core
 from . import io
 from . import extp
+from . import graph

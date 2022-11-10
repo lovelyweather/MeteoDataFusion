@@ -1,5 +1,9 @@
 import os
 
+import sys
+sys.path.append("..")
+
+from graph import fusiondisplay 
 import numpy as np
 from netCDF4 import Dataset  # 读取nc文件用到的包
 from scipy.interpolate import griddata  # 对SST空间插值用到的函数
@@ -67,8 +71,8 @@ class FY4ALevel32ll(object):
 
 if __name__=='__main__':
     
-    Min_Lat= 15
-    Max_Lat = 30
+    Min_Lat= 20
+    Max_Lat = 35
     Min_Lon = 100
     Max_Lon = 130 #中国区域的经度范围70-140E，纬度范围15-55N
 
@@ -84,5 +88,19 @@ if __name__=='__main__':
 
     fy4_ll = FY4ALevel32ll(FY4ALevel3Data(infile), Lat_des_2D, Lon_des_2D, 'nearest').interp()
 
-    plt.imshow(fy4_ll['CTH']['data'])
-    plt.savefig('test_fy4.png')
+
+    plt.figure(figsize=(12,6))
+    plt.contourf( Lon_des_2D, Lat_des_2D, fy4_ll['CTH']['data']/1000, vmax=20, vmin=0, cmap='Blues',  )  #   LonAfter_2D, Lat_After_2D
+    plt.colorbar() #location="bottom"
+    plt.title('cloud top height in km')
+    #plt.show()
+
+    #plt.imshow(fy4_ll['CTH']['data'])
+
+
+    plt.savefig('test_fy4_ll.png')
+    
+
+    #fusiondisplay.plot_sat(data=fy4_ll['CTH']['data']/1000,varname='CLM',Lat_2D=Lat_des_2D, Lon_2D=Lon_des_2D, is_ac_plot=False, min_max=[0,4], ac_ll=None,\
+    #ll_extend=[Min_Lat, Max_Lat, Min_Lon, Max_Lon], orientation="vertical",cmap='Blues', tick_level=np.arange(-0.5,4),cbar_ticklabels = np.arange(0,4) )
+    

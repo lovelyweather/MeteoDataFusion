@@ -166,9 +166,9 @@ class CRefMosaic2ll(object):
 
 if __name__=='__main__':
     
-    Min_Lat= 15
-    Max_Lat = 55
-    Min_Lon = 70
+    Min_Lat= 20
+    Max_Lat = 35
+    Min_Lon = 100
     Max_Lon = 130 #中国区域的经度范围70-140E，纬度范围15-55N
 
     Lat_des_1D = np.arange( Max_Lat, Min_Lat, -0.1 )  # 生成插值后的纬度  -0.04
@@ -182,5 +182,10 @@ if __name__=='__main__':
 
     cmosiac_ll = CRefMosaic2ll(CRefMosaicData(infile), Lat_des_2D, Lon_des_2D, 'linear').interp()
     
-    plt.imshow(cmosiac_ll['cref']['data'])
-    plt.savefig('test_cref.png')
+    plt.figure(figsize=(12,6))
+    plt.contourf( Lon_des_2D, Lat_des_2D, cmosiac_ll['cref']['data'], levels = np.linspace(10,70,13) )  #   LonAfter_2D, Lat_After_2D
+    plt.colorbar() #location="bottom"
+    plt.title('mosaic composite reflectivity in dBZ')
+
+    #plt.imshow(cmosiac_ll['cref']['data'])
+    plt.savefig('test_cref_ll.png')

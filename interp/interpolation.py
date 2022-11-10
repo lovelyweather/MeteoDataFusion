@@ -1,26 +1,8 @@
 import numpy as np
 
-class transform(object):
-    '''
-    A class for storing the 
-
-
-    '''
-
-    def __init__(self, FusionData, ac_para, var:list):
-        self.Data = FusionData
-        self.ac_para = ac_para
-        self.var = var
-        self.acgrid_data = {}
-
-        for i_var in var:
-
-
-
-
 def AngleToValid(angle):
     '''
-    constrain the angles within 0-360 degree. 
+    constrain the angles within 0-360 degree.                            
     eg: -90 will be turned into 270.
     '''
     ans = angle - int(np.floor_divide(angle, 360.0)) * 360
@@ -37,6 +19,20 @@ def DMS2Decimal(dms):
         
     return decimal
 
+def rotate(x, y, alpha):
+    '''
+    rotate the graph for alpha degree
+    # For a given point (x, y) in the plot, rotate the graph , the new point would be (x0, y0)
+    假设对图片上任意点(x,y)，绕一个坐标点(rx0,ry0)逆时针旋转a角度后的新的坐标设为(x0, y0)，有公式：
+        x0= (x - rx0)*cos(a) - (y - ry0)*sin(a) + rx0 ;
+        y0= (x - rx0)*sin(a) + (y - ry0)*cos(a) + ry0 ;
+    '''
+    alpha = np.deg2rad(alpha)
+    x_r = x * np.cos(alpha) - y * np.sin(alpha)
+    y_r = x * np.sin(alpha) + y * np.cos(alpha)
+
+    return x_r, y_r
+
 def get_ac(ac_parameters, var, lat, lon):
     '''
     based on the aircraft parameters, transform the original
@@ -46,7 +42,10 @@ def get_ac(ac_parameters, var, lat, lon):
     params ac_parameters: a dictionary containing air-borne radar's parameters
     params var          : the product to transfer, should be 2D matrix
     params lat, lon     : 2D matrix, latitude and longtitude for var
-
+    
+    return 
+    radarX, radarY : distance from radar site in x and y direction
+    var_ac         : np.array after interpolation.
     '''
     Rmax      = ac_parameters['Rmax_Air']
     Rmin      = ac_parameters['Rmin_Air']
@@ -70,6 +69,8 @@ def get_ac(ac_parameters, var, lat, lon):
 
     radarX = np.zeros((360, ngate), dtype = float ) 
     radarY = np.zeros((360, ngate), dtype = float ) 
+    long_ac = radarX
+    lat_ac  = radarX # initialize
     var_ac = np.zeros((360, ngate), dtype = float ) 
     for i_az in np.arange(Azmin, Azmax + 1):  # azimuth comes from east, the direction is counterclockwise
         for i_bin in np.arange(0, ngate):
@@ -82,9 +83,12 @@ def get_ac(ac_parameters, var, lat, lon):
             lat_grid = y / 1000.0 /111.0 + lat0
             lon_grid = np.rad2deg(x / 1000.0 /(R_earth * np.cos(np.deg2rad(lat_grid)))) + lon0
 
+            long_ac[i_az_valied, i_bin]  = lon_grid
+            lat_ac[i_az_valied, i_bin]    = lat_grid
+
             y_index = np.argmin(np.abs(lat - lat_grid)) # lat：原始数据中的等经纬度网格；lat_grid：机载网格中点(i_az, i_bin)的经度。
             x_index = np.argmin(np.abs(lon - lon_grid))
 
             var_ac[i_az_valied, i_bin] = var[y_index, x_index] 
 
-    return radarX, radarY, var_ac
+    return radarX, radarY, var_ac 

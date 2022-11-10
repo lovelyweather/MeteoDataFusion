@@ -56,7 +56,7 @@ class WSR98DData(object):
 
     def cal_tb(self):
         pytda.calc_turb_vol(self.PyartRadar, name_sw='spectrum_width', name_dz='reflectivity', verbose=False,
-                    gate_spacing=250.0/1000.0, use_ntda=False)
+                    gate_spacing=250.0/1000.0, use_ntda=False, turb_name='tb')
         
 
     def cal_fh(self):
@@ -232,9 +232,9 @@ class Radar2ll(object):
 
 if __name__ == '__main__':
 
-    Min_Lat= 15
-    Max_Lat = 55
-    Min_Lon = 70
+    Min_Lat= 20
+    Max_Lat = 35
+    Min_Lon = 100
     Max_Lon = 130 #中国区域的经度范围70-140E，纬度范围15-55N
 
     Lat_des_1D = np.arange( Max_Lat, Min_Lat, -0.1 )  # 生成插值后的纬度  -0.04
@@ -245,10 +245,30 @@ if __name__ == '__main__':
     path = '/Users/xiaowu/Library/Mobile Documents/com~apple~CloudDocs/work/MeteoDataFusion'
     infile = os.path.join(path,'test','data','Z9002.20220425.060745.AR2.bz2')
 
-    radar_ll = Radar2ll(WSR98DData(infile), Lat_des_2D, Lon_des_2D, ['FH', 'compz'], 0, 'linear').interp()
+    radar_ll = Radar2ll(WSR98DData(infile), Lat_des_2D, Lon_des_2D, ['FH', 'compz'], 1, 'linear').interp()
     
-    plt.imshow(radar_ll['compz']['data'])
-    plt.savefig('test_98d.png')
+    #plt.imshow(radar_ll['compz']['data'])
+    def adjust_fhc_colorbar_for_pyart(cb):
+        cb.set_ticks(np.arange(1., 11, 1))
+        cb.ax.set_yticklabels(['Drizzle', 'Rain', 'Ice Crystals', 'Aggregates',
+                            'Wet Snow', 'Vertical Ice', 'LD Graupel',
+                            'HD Graupel', 'Hail', 'Big Drops'])
+        cb.ax.set_ylabel('')
+        cb.ax.tick_params(length=0)
+        return cb
+
+    hid_colors = ['White', 'LightBlue', 'MediumBlue', 'DarkOrange', 'LightPink',
+              'Cyan', 'DarkGray', 'Lime', 'Yellow', 'Red', 'Fuchsia']
+    cmaphid = colors.ListedColormap(hid_colors)
+
+    plt.figure(figsize=(12,6))
+    #plt.contourf( Lon_des_2D, Lat_des_2D, radar_ll['FH']['data'], levels = np.linspace(-0.5,10.5,12) , cmap = cmaphid) #, cmap = 'cubehelix' )  # 
+    plt.pcolormesh( Lon_des_2D, Lat_des_2D, radar_ll['FH']['data'], vmin = -0.5, vmax = 10.5, cmap = cmaphid)
+    cb = plt.colorbar() 
+
+    plt.title("hydrometeor type")
+    cb = adjust_fhc_colorbar_for_pyart(cb)
+    plt.savefig('fh_98d_ll.png')
 
 '''
     def two_panel_plot( radar, sweep=0, var1='reflectivity', vmin1=0, vmax1=65, cmap1='RdYlBu_r', 

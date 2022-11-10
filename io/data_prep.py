@@ -31,11 +31,12 @@ class FusionData(object):
         grid resolution.
     FusionDS   : dict of dict.
         variables from radar or satellite based products.
-        FusionDS.WSR88D.turbulence[it,iy,ix]
+        eg. FusionDS.WSR88D.turbulence[it,iy,ix]`
 
     '''
 
-    def __init__(self, filename:list, datatype:list = ['chinese_mosiac', 'FY4A'], time_range : list = None, \
+    def __init__(self, filename:list, datatype:list = ['chinese_mosiac', 'FY4A'], \
+        var_98d:list = ['FH', 'compz', 'reflectivity'], time_range : list = None, \
         extend_ll:list = [15, 30, 100, 130], resolution:float = 0.04, \
         wsr98d_fields_add = None):
         #中国区域的经度范围70-140E，纬度范围15-55N
@@ -55,7 +56,7 @@ class FusionData(object):
             filetime = []
             field_dict = {}
             for i_time, i_file in enumerate(filename[i_type]): # filename is a list of
-                i_filetime, i_ds = self.read_interp(i_file, obs_source)
+                i_filetime, i_ds = self.read_interp(i_file, obs_source, var_98d)
                 filetime.append(i_filetime)
 
                 if i_time == 0:
@@ -89,7 +90,7 @@ class FusionData(object):
 
             self.FusionDS[obs_source] = field_dict
 
-    def read_interp(self, filename:str, datatype:str):
+    def read_interp(self, filename:str, datatype:str, var_98d:list=['FH', 'compz']):
 
         Min_Lat, Max_Lat = self.extend_ll[0], self.extend_ll[1]
         Min_Lon, Max_Lon = self.extend_ll[2], self.extend_ll[3]     
@@ -112,7 +113,7 @@ class FusionData(object):
         elif datatype == "WSR98D":
             file_time = WSR98D.WSR98DData(filename, fields_add = []).time
             if file_time < self.time_e:
-                return file_time, WSR98D.Radar2ll(WSR98D.WSR98DData(filename, sounding_infile = 'None'), Lat_des_2D, Lon_des_2D, ['FH', 'compz'], 0, 'linear' ).interp()
+                return file_time, WSR98D.Radar2ll(WSR98D.WSR98DData(filename, sounding_infile = 'None'), Lat_des_2D, Lon_des_2D, var_98d, 0, 'linear' ).interp()
         else:
             raise TypeError("unsupported radar type!")
 
@@ -138,7 +139,8 @@ if __name__ == '__main__':
     for i_file in filename:
         wsr98d_file.append(os.path.join(path,'test','data',i_file))
 
-    Fusion_object = FusionData(filename= [fy4_infile, cref_infile, wsr98d_file], datatype= ['FY4A', 'chinese_mosiac', 'WSR98D'], time_range = time_range,\
+    Fusion_object = FusionData(filename= [fy4_infile, cref_infile, wsr98d_file], datatype= ['FY4A', 'chinese_mosiac', 'WSR98D'], \
+        var_98d=['FH', 'compz', 'reflectivity'], time_range = time_range,\
         extend_ll= [15, 30, 100, 130], resolution = 0.04)
     
     print(Fusion_object.FusionDS.keys())
