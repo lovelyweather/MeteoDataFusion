@@ -6,6 +6,6 @@ Py-MetFusion: The weather data fusion Toolkit designed
 
 # import subpackages
 from . import core
-from . import io
+from . import ioo
 from . import extp
 from . import graph

@@ -69,16 +69,17 @@ def get_ac(ac_parameters, var, lat, lon):
 
     radarX = np.zeros((360, ngate), dtype = float ) 
     radarY = np.zeros((360, ngate), dtype = float ) 
-    long_ac = radarX
-    lat_ac  = radarX # initialize
+    long_ac = np.zeros((360, ngate), dtype = float ) 
+    lat_ac  = np.zeros((360, ngate), dtype = float )  # initialize
     var_ac = np.zeros((360, ngate), dtype = float ) 
+    #print( np.arange(Azmin, Azmax + 1))
     for i_az in np.arange(Azmin, Azmax + 1):  # azimuth comes from east, the direction is counterclockwise
         for i_bin in np.arange(0, ngate):
             i_az_valied = int(AngleToValid(i_az))
-            x = i_bin * Bin_length * np.sin(np.deg2rad(i_az))
-            y = i_bin * Bin_length * np.cos(np.deg2rad(i_az))
+            x = i_bin * Bin_length * np.sin(np.deg2rad(i_az_valied))
+            y = i_bin * Bin_length * np.cos(np.deg2rad(i_az_valied))
             radarX[i_az_valied, i_bin] = x
-            radarY[i_az_valied, i_bin] = y
+            radarY[i_az_valied, i_bin] = y            
 
             lat_grid = y / 1000.0 /111.0 + lat0
             lon_grid = np.rad2deg(x / 1000.0 /(R_earth * np.cos(np.deg2rad(lat_grid)))) + lon0
