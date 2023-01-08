@@ -67,7 +67,7 @@ def get_ac(ac_parameters, var, lat, lon):
     Azmax = heading_angle + range_angle
     ngate = int(np.round((Rmax - Rmin) * 1000 / Bin_length))
 
-    radarX = np.zeros((360, ngate), dtype = float ) 
+    radarX = np.zeros((360, ngate), dtype = float )   # 赋初值360*ngate，但实际的维度只有 （Azmax-Azmin） * ngate
     radarY = np.zeros((360, ngate), dtype = float ) 
     long_ac = np.zeros((360, ngate), dtype = float ) 
     lat_ac  = np.zeros((360, ngate), dtype = float )  # initialize
